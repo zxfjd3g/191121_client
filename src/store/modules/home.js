@@ -7,12 +7,23 @@ const state = {
 }
 
 const mutations = {
+  /* 
+  接收分类列表
+  */
   RECEIVE_BASE_CATEGORY_LIST(state, list) {
     state.baseCategoryList = list.slice(0, list.length-2)
   },
+
+  /* 
+  接收广告轮播列表
+  */
   RECEIVE_BANNERS(state, banners) {
     state.banners = banners
   },
+
+  /* 
+  接收楼层列表
+  */
   RECEIVE_FLOORS(state, floors) {
     state.floors = floors
   },

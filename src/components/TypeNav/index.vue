@@ -5,9 +5,9 @@
       <div @mouseenter="isShow=true" @mouseleave="hideCategorys">
         <h2 class="all">全部商品分类</h2>
         <div class="sort" v-show="isShow && baseCategoryList.length>0">
-          <div class="all-sort-list2">
+          <div class="all-sort-list2" @click="toSearch">
             <div class="item" v-for="(bc, index) in baseCategoryList" :key="bc.categoryId"
-              :class="{item_on: currentIndex===index}" @mouseenter="showChildCategorys(index)" @click="toSearch">
+              :class="{item_on: currentIndex===index}" @mouseenter="showChildCategorys(index)">
               <h3>
                 <a href="javascript:" :data-categoryName="bc.categoryName" :data-category1Id="bc.categoryId">{{bc.categoryName}}</a>
               </h3>

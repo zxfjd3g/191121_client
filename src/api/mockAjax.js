@@ -1,7 +1,8 @@
-import axios from 'axios'
 /* 
 专门请求mock接口的axios封装
 */
+import axios from 'axios'
+
 const mockAjax = axios.create({
   baseURL: "/mock", // 路径前缀
   timeout: 10000 // 请求超时时间
