@@ -59,9 +59,35 @@
       })
     },
 
+    mounted () {
+      // 通过事件总线绑定自定义事件监听  ==> 置空keyword
+      this.$bus.$on('removeKeyword', () => {
+        this.keyword = ''
+      })
+    },
+
     methods: {
       search () {
-        this.$router.push(`/search/${this.keyword}`)
+        if (this.keyword) {
+          if (this.$route.path.startsWith('/search')) {
+            this.$router.replace({
+              name: 'search', 
+              params: {keyword: this.keyword}, 
+              query: this.$route.query
+            })
+          } else {
+            this.$router.push({name: 'search', params: {keyword: this.keyword}})  // 可以
+          }
+        } else {
+          if (this.$route.path.startsWith('/search')) {
+            this.$router.replace({
+              name: 'search', 
+              query: this.$route.query
+            })
+          } else {
+            this.$router.push({name: 'search'})  // 可以
+          }
+        }
 
         /* 指定了成功的回调就不会报错误 */
         // this.$router.push(`/search/${this.keyword}`, () => {}) 

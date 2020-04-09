@@ -4,9 +4,11 @@
       <div class="fl key brand">品牌</div>
       <div class="value logos">
         <ul class="logo-list">
-          <li @click="changeTrademark(trademark.tmId, trademark.tmName)"
-            v-for="trademark in trademarkList"
-            :key="trademark.tmName + trademark.tmId">{{ trademark.tmName }}</li>
+          <li @click="setTrademark(trademark.tmId, trademark.tmName)"
+            v-for="trademark in trademarkList"
+            :key="trademark.tmId">
+            {{ trademark.tmName }}
+          </li>
         </ul>
       </div>
       <div class="ext">
@@ -14,15 +16,15 @@
         <a href="javascript:void(0);">更多</a>
       </div>
     </div>
-    <div class="type-wrap" v-for="attrs in attrsList" :key="`${attrs.attrName}-${attrs.attrId}`">
-      <div class="fl key">{{ attrs.attrName }}</div>
+    <div class="type-wrap" v-for="attr in attrsList" :key="attr.attrId">
+      <div class="fl key">{{ attr.attrName }}</div>
       <div class="fl value">
         <ul class="type-list">
-          <li v-for="attr in attrs.attrValueList" :key="attr">
-            <a href="javascript:" @click="addOption(attrs.attrId, attr, attrs.attrName)">
-              {{attr}}
-            </a>
-          </li>
+          <li v-for="value in attr.attrValueList" :key="value">
+            <a href="javascript:" @click="addProp(attr.attrId, value, attr.attrName)">
+              {{value}}
+            </a>
+          </li>
         </ul>
       </div>
       <div class="fl ext"></div>
@@ -31,28 +33,17 @@
 </template>
 
 <script>
-  import {
-    mapGetters
-  } from 'vuex';
+  import { mapGetters } from 'vuex'
   export default {
     name: 'SearchSelector',
-    props: {
-      setProps: Function,
-      setTrademark: Function
-    },
+    props: {
+      addProp: Function, 
+      setTrademark: Function
+    },
     computed: {
-      ...mapGetters(['trademarkList', 'attrsList'])
+      ...mapGetters(['attrsList', 'trademarkList'])
     },
-    methods: {
-      addOption(propsId, select, propsName) {
-        const newProps = `${propsId}:${select}:${propsName}`;
-        this.setProps(propsId, newProps);
-      },
-      changeTrademark(tmId, tmName) {
-        this.setTrademark(tmId, tmName);
-      }
-    }
-  };
+  }
 </script>
 
 <style lang="less" scoped>

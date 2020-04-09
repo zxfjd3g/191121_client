@@ -1,46 +1,60 @@
-import {reqList} from '@/api'
+import { reqProductList } from '@/api'
 
-const state = {
-  list:[]
+const state = {
+  productList: {} // 包含搜索商品相关信息的对象   注意: 不是数组
 }
 
-const mutations = {
-  RECEIVE_LIST (state,list){
-    state.list=list
-  }
+const mutations = {
+  /* 
+  接收保存商品列表
+  */
+  RECEIVE_PRODUCT_LIST (state, productList){
+    state.productList = productList
+  }
 }
 
-const actions = {
-  //获取筛选后的产品列表
-  async getList({commit},option){
-    const searchParam={...option};
-    //删除对象中的空属性
-    for (const key in searchParam) {
-      if (!searchParam.hasOwnProperty(key)||(typeof searchParam[key]==="string"&&!searchParam[key].trim())) {
-        delete searchParam[key]
-      }
-    }
-    const result=await reqList(searchParam);
-    if(result.code===200){
-      commit('RECEIVE_LIST',result.data)
-    }
-  }
+const actions = {
+  // 获取筛选后的产品列表
+  async getProductList({commit}, options){
+    const searchParams = {...options}
+    // 删除参数对象中空串参数属性
+    /* Object.keys(searchParams).forEach(key => {
+      if (searchParams[key]==='') {
+        delete searchParams[key]
+      }
+    }) */
+    const result = await reqProductList(searchParams)
+    if(result.code===200){
+      commit('RECEIVE_PRODUCT_LIST',result.data)
+    }
+  }
 }
-const getters = {
-  trademarkList(state){
-    return state.list.trademarkList||[];
-  },
-  attrsList(state){
-    return state.list.attrsList||[];
-  },
-  goodsList(state){
-    return state.list.goodsList||[];
-  }
+const getters = {
+  /* 
+  商标列表
+  */
+  trademarkList(state){
+    return state.productList.trademarkList || []
+  },
+
+  /* 
+  属性列表
+  */
+  attrsList(state){
+    return state.productList.attrsList || []
+  },
+
+  /* 
+  商品列表
+  */
+  goodsList(state){
+    return state.productList.goodsList || []
+  }
 }
 
-export default {
-    state,
-    actions,
-    mutations,
-    getters
+export default {
+    state,
+    actions,
+    mutations,
+    getters
 }

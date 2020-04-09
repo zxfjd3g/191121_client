@@ -101,37 +101,40 @@ export default {
     },
 
     /* 
-    进入搜索界面, 携带条件参数数据
+    点击某个分类项跳转到search路由
     */
-    toSearch(event){
-      // 得到事件源标签上的自定义属性数据
-      // const {categoryname,category1id,category2id,category3id} = event.target.dataset
-      const {dataset:{categoryname,category1id,category2id,category3id}}=event.target
-      // 如果操作的是任意一级分类
-      if(categoryname) {
-        // 定义用来保存查询参数的对象, 初始包含分类名称属性
+    toSearch (event) { // 只绑定的一个点击监听
+      // console.dir(event.target)
+      // 得到所有标签上的data自定义属性
+      const dataset = event.target.dataset
+      // console.log('dataset', dataset)
+      // 取出自定义属性值
+      const {categoryname, category1id, category2id, category3id} = dataset
+
+      //if (event.target.tagName==='A') { // 如果点击的是a标签就可以跳转了
+      if (categoryname) { // 必然点击的是分类项
+        // 准备query参数对象
         const query = {categoryName: categoryname}
-        if(category1id){ // 如果有一级分类ID ==> 点击的是一级某个分类
+        if (category1id) {
           query.category1Id = category1id
-        }else if(category2id){ // 如果有二级分类ID ==> 点击的是二级某个分类
+        } else if (category2id) {
           query.category2Id = category2id
-        }else if(category3id){// 如果有三级分类ID ==> 点击的是三级某个分类
+        } else if (category3id) {
           query.category3Id = category3id
         }
-        // 得到当前请求的路由路径
+        // 跳转路由, 并携带query参数
         const currentPath = this.$route.path
-        // 如果当前已经在搜索, 通过replace跳转到搜索并携带query参数
-        if (currentPath==='/search') {
-          this.$router.replace({path:"/search",query})
-        } else { // 否则, 通过push跳转到搜索并携带query参数 
-          this.$router.push({path:"/search",query})
+        // 如果当前就是搜索界面, replace方式再次跳转到搜索界面, 携带query参数
+        if (currentPath.startsWith('/search')) {
+          this.$router.replace({path: currentPath, query})
+        } else { // 否则, push方式跳转到搜索界面, 携带query参数
+          this.$router.push({path: '/search', query})
         }
-        // 隐藏一级分类列表
-        this.isShow = false
-        // 重置当前一级分类下标
+        // 隐藏分类列表
         this.currentIndex = -1
+        this.isShowFirst = false
       }
-    }
+    },
   }
 }
 </script>

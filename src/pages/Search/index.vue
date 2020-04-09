@@ -1,218 +1,284 @@
 <template>
-  <!--list-content-->
-  <div class="main">
+  <div>
     <TypeNav />
-    <div class="py-container">
-      <!--bread-->
-      <div class="bread">
-        <ul class="fl sui-breadcrumb">
-          <li>
-            <a href="#">全部结果</a>
-          </li>
-        </ul>
-        <ul class="fl sui-tag">
-          <li class="with-x" v-show="category">{{category}}</li>
-          <li class="with-x" v-show="option.trademark">{{option.trademark}}<i @click="removeOption('trademark')">×</i>
-          </li>
-          <li class="with-x" v-for="(prop,index) in option.props" :key="prop">{{prop}}
-            <i @click="removePorp(index)">×</i></li>
-        </ul>
-      </div>
-      <!--selector-->
-      <SearchSelector :setProps="setProps" :setTrademark="setTrademark" />
-      <!--details-->
-      <div class="details clearfix">
-        <div class="sui-navbar">
-          <div class="navbar-inner filter">
-            <ul class="sui-nav">
-              <li :class="{active:option.order.includes('1')}" @click="setSort('hot')">
-                <a href="#">综合</a>
-              </li>
-              <li>
-                <a href="#">销量</a>
-              </li>
-              <li>
-                <a href="#">新品</a>
-              </li>
-              <li>
-                <a href="#">评价</a>
-              </li>
-              <li>
-                <a href="#" :class="{active:option.order==='2:asc'}" @click="setSort('2:asc')">价格⬆</a>
-              </li>
-              <li>
-                <a href="#" :class="{active:option.order==='2:desc'}" @click="setSort('2:desc')">价格⬇</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div class="goods-list">
-          <ul class="yui3-g">
-            <li class="yui3-u-1-5" v-for="good in goodsList" :key="`${good.title}-${good.id}`">
-              <div class="list-wrap">
-                <div class="p-img">
-                  <router-link :to="`/detail/${good.id}`">
-                    <img :src="good.defaultImg"/>
-                  </router-link>
-                </div>
-                <div class="price">
-                  <strong>
-                    <em>¥</em>
-                    <i>{{ good.price }}</i>
-                  </strong>
-                </div>
-                <div class="attr">
-                  <router-link :to="`/detail/${good.id}`">{{good.title}}</router-link>
-                </div>
-                <div class="commit">
-                  <i class="command">已有<span>2000</span>人评价</i>
-                </div>
-                <div class="operate">
-                  <a href="javascript:" class="sui-btn btn-bordered btn-danger">加入购物车</a>
-                  <a href="javascript:" class="sui-btn btn-bordered">收藏</a>
-                </div>
-              </div>
+    <div class="main">
+      <div class="py-container">
+        <!--bread-->
+        <div class="bread">
+          <ul class="fl sui-breadcrumb">
+            <li>
+              <a href="#">全部结果</a>
+            </li>
+          </ul>
+          <ul class="fl sui-tag">
+            <li class="with-x" v-show="options.categoryName">
+              {{options.categoryName}} <i @click="removeCategory">×</i>
+            </li>
+            <li class="with-x" v-show="options.keyword">
+              {{options.keyword}} <i @click="removeKeyword">×</i>
+            </li>
+            <li class="with-x" v-show="options.trademark">
+        {{options.trademark}}
+        <i @click="removeTrademark">×</i>
+      </li>
+            <li class="with-x" v-for="(prop,index) in options.props" :key="prop">
+              {{prop}}<i @click="removeProp(index)">×</i>
             </li>
           </ul>
         </div>
-        <Pagination
-          :page-config="{
-            total: list.total,
-            pageSize: list.pageSize,
-            pageNo: currentPage,
-            showPageNo: 5
-          }"
-          @changeCurrentPage="handleCurrentChange"
-        />
+
+        <!--selector-->
+        <SearchSelector :addProp="addProp" :setTrademark="setTrademark"/>
+
+        <!--details-->
+        <div class="details clearfix">
+          <div class="sui-navbar">
+            <div class="navbar-inner filter">
+              <ul class="sui-nav">
+                <li :class="{active: isActive('1')}" @click="setOrder('1')">
+                  <a href="javascript:">
+                    综合 {{getOrderType('1')}}
+                  </a>
+                </li>
+                <li>
+                  <a href="javascript:">销量</a>
+                </li>
+                <li>
+                  <a href="javascript:">新品</a>
+                </li>
+                <li>
+                  <a href="javascript:">评价</a>
+                </li>
+                <li :class="{active: isActive('2')}" @click="setOrder('2')">
+                  <a href="javascript:">
+                    价格{{getOrderType('2')}}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="goods-list">
+            <ul class="yui3-g">
+              <li class="yui3-u-1-5" v-for="good in productList.goodsList" :key="good.id">
+                <div class="list-wrap">
+                  <div class="p-img">
+                    <router-link :to="`/detail/${good.id}`">
+                      <img :src="good.defaultImg"/>
+                    </router-link>
+                  </div>
+                  <div class="price">
+                    <strong>
+                      <i>¥ {{ good.price }}</i>
+                    </strong>
+                  </div>
+                  <div class="attr">
+                    <router-link :to="`/detail/${good.id}`">{{good.title}}</router-link>
+                  </div>
+                  <div class="commit">
+                    <i class="command">已有<span>2000</span>人评价</i>
+                  </div>
+                  <div class="operate">
+                    <a href="javascript:" class="sui-btn btn-bordered btn-danger">加入购物车</a>
+                    <a href="javascript:" class="sui-btn btn-bordered">收藏</a>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <!-- 分页 -->
+     <Pagination :page-config="{
+          total: productList.total,
+         pageSize: productList.pageSize,
+         pageNo: options.pageNo,
+         showPageNo: 5
+        }"
+            @changeCurrentPage="handleCurrentChange"
+          />
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-  import {
-    mapGetters,
-    mapState
-  } from 'vuex'
   import SearchSelector from './SearchSelector/SearchSelector'
+  import { mapState } from 'vuex'
   export default {
-    name: "Search",
-    data() {
+    name: 'Search',
+
+    data () {
       return {
-        option: {
-          order: "1:desc",
-          props: [],
-          pageNo: 1,
-          pageSize: 10
-        },
-        currentPage: 1
+        options: {
+          category1Id: '', // 一级分类ID
+          category2Id: '', // 二级分类ID
+          category3Id: '', // 三级分类ID
+          categoryName: '', // 分类名称
+          props: [], // 商品筛选属性 ["2:6.0～6.24英寸:屏幕尺寸", "3:64G:内存大小"]
+          trademark: '', // 品牌 '1:苹果'
+          order: '1:desc', // 排序方式 默认综合降序
+          pageNo: 1, // 页码
+          pageSize: 5, // 每页数量
+          keyword: '', // 搜索关键字 
+        }
       }
     },
 
-    mounted() {
-      this.option = {
-        ...this.option,
-        ...this.$route.query,
-        ...this.$route.params,
-      };
-      //设置事件总线,防止在Search页面再次点击搜索按钮无效
-      this.$bus.$on('setKeyWord', this.setKeyWord)
-      this.getList()
+    computed: {
+      ...mapState({
+        productList: state => state.search.productList
+      })
     },
 
-    computed: {
-      category() {
-        return this.option.categoryName || this.option.keyword
-      },
-      ...mapGetters(["goodsList"]),
-      ...mapState({
-        list: state => state.search.list
-      })
+    mounted () {
 
+      //将请求参数与当前条件合并
+      this.options = {
+        ...this.options,
+        ...this.$route.params,
+        ...this.$route.query
+      }
+      this.getProductList()
     },
 
     watch: {
-      $route (value) {
-        this.option = {
-          ...this.option,
-          ...value.query,
-          ...value.params,
+      $route () {
+        console.log(this.$route.params)
+        this.options = {
+          ...this.options,
+          category1Id: '', // 一级分类ID
+          category2Id: '', // 二级分类ID
+          category3Id: '', // 三级分类ID
+          categoryName: '', // 分类名称
+          ...this.$route.params,
+          ...this.$route.query
         }
-        this.getList()
+        this.getProductList()
       }
     },
 
     methods: {
+      /* 
+      根据搜索条件异步获取匹配的商品数据
+      */
+      getProductList () {
+        this.$store.dispatch('getProductList', this.options)
+      },
 
-      getList() {
-        this.$store.dispatch('getList', this.option)
-      },
-      setKeyWord(keyword) {
-        this.option.keyword = keyword
-        this.getList()
-      },
-      setProps(propsId, newProps) {
-        let oldProps = this.option.props
-        let isRepeat = false
-        propsId = "" + propsId
-        oldProps = oldProps.map((item) => {
-          const result = item.split(":")[0] === propsId
-          isRepeat = result ? result : isRepeat
-          return result ? newProps : item
+      /* 
+      添加属性
+      */
+      addProp (attrId, value, attrName) {
+        // 判断要添加的属性是否已经添加过了
+        const has = this.options.props.some(prop => {
+          const id = prop.split(":")[0] * 1
+          return id===attrId
+        })
+        // 如果没有, 添加一个新的用于搜索的属性, 并重新搜索
+        if (!has) {
+          this.options.props.push(`${attrId}:${value}:${attrName}`)
+          this.getProductList()
+        } 
+      },
+
+      /* 
+      设置品牌商标
+      */
+      setTrademark(tmId, tmName) {
+        const trademark = `${tmId}:${tmName}`
+        if (this.options.trademark!==trademark) {
+          this.options.trademark = trademark
+          this.getProductList()
+        }
+      },
+
+      /* 
+      移除分类搜索条件
+      */
+      removeCategory () {
+        this.options.categoryName = ''
+        this.options.category1Id = ''
+        this.options.category2Id = ''
+        this.options.category3Id = ''
+        this.options.category4Id = ''
+
+        const {path, params} = this.$route
+        this.$router.replace({
+          path,
+          params
         })
-        if (!isRepeat) {
-          this.option.props = [...oldProps, newProps]
+      },
+
+      /* 
+      移除关键字搜索条件
+      */
+      removeKeyword () {
+        this.options.keyword = ''
+        this.$bus.$emit('removeKeyword') // 分发移除关键字的事件==> 通知Header组件
+        this.$router.replace({path: '/search', query: this.$route.query})
+      },
+
+      /* 
+      移除品牌搜索条件
+      */
+      removeTrademark () {
+        this.options.trademark = ''
+        this.getProductList()
+      },
+
+      /* 
+      移除一个商品属性搜索条件
+      */
+      removeProp (index) {
+        this.options.props.splice(index, 1)
+      },
+
+      /* 
+      处理当前页发生改变的监听
+      */
+      handleCurrentChange(currentPage) {
+        this.options.pageNo = currentPage
+        this.getProductList()
+      },
+
+      /* 
+      判断指定排序选项是否选中
+      */
+      isActive (orderFlag) { // 综合1,价格2
+        // 如order值为“1:desc” ==> '1'
+        const currentFlag = this.options.order.split(':')[0]
+        return currentFlag===orderFlag
+      },
+
+      /* 
+      指定按指定排序选项进行排序
+      */
+      setOrder (orderFlag) {
+        let [currentFlag, orderType] = this.options.order.split(':')
+        if (currentFlag===orderFlag) {
+          orderType = orderType==='desc' ? 'asc' : 'desc'
         } else {
-          this.option.props = oldProps
+          currentFlag = orderFlag
+          orderType = 'desc'
         }
-        this.getList()
+        this.options.order = `${currentFlag}:${orderType}`
+        this.getProductList()
       },
-      setTrademark(tmId, tmName) {
-        this.option = {
-          ...this.option,
-          trademark: `${tmId}:${tmName}`
-        }
-        this.getList()
-      },
-      removePorp(index) {
-        this.option.props.splice(index, 1)
-        this.getList()
-      },
-      removeOption(attr) {
-        if (attr === "category") {
-          if (this.option.categoryName) {
-            this.option.category1Id = ""
-            this.option.category2Id = ""
-            this.option.category3Id = ""
-            this.option.categoryName = ""
-          } else {
-            this.option.keyword = ""
-          }
+      
+      /* 
+      得到指定排序选项的排序方式
+      */
+      getOrderType (orderFlag) {
+        const [currentFlag, orderType] = this.options.order.split(':')
+        if (currentFlag===orderFlag) {
+          return orderType === 'desc' ? '⬇' : '⬆'
         } else {
-          this.option[attr] = ""
+          return '' // 不用显示排序类型
         }
-        this.getList()
-      },
-      setSort(value) {
-        if (value === "hot") {
-          if (this.option.order.includes('asc')) {
-            this.option.order = "1:desc"
-          } else {
-            this.option.order = "1:asc"
-          }
-        } else {
-          this.option.order = value
-        }
-        this.getList()
-      },
-      handleCurrentChange(currentPage) {
-        this.option.pageNo = currentPage
-        this.getList()
-      },
+      }
     },
 
     components: {
-      SearchSelector,
+      SearchSelector
     }
   }
 </script>
@@ -543,84 +609,6 @@
               font-size: 14px;
               float: right;
               width: 241px;
-            }
-          }
-        }
-      }
-
-      .hot-sale {
-        margin-bottom: 5px;
-        border: 1px solid #ddd;
-
-        .title {
-          font-weight: 700;
-          font-size: 14px;
-          line-height: 21px;
-          border-bottom: 1px solid #ddd;
-          background: #f1f1f1;
-          color: #333;
-          margin: 0;
-          padding: 5px 0 5px 15px;
-        }
-
-        .hot-list {
-          padding: 15px;
-
-          ul {
-            display: flex;
-
-            li {
-              width: 25%;
-              height: 100%;
-
-              .list-wrap {
-
-                .p-img,
-                .price,
-                .attr,
-                .commit {
-                  padding-left: 15px;
-                }
-
-                .p-img {
-                  img {
-                    max-width: 100%;
-                    vertical-align: middle;
-                    border: 0;
-                  }
-                }
-
-                .attr {
-                  width: 85%;
-                  display: -webkit-box;
-                  -webkit-box-orient: vertical;
-                  -webkit-line-clamp: 2;
-                  overflow: hidden;
-                  margin-bottom: 8px;
-                  min-height: 38px;
-                  cursor: pointer;
-                  line-height: 1.8;
-                }
-
-                .price {
-                  font-size: 18px;
-                  color: #c81623;
-
-                  strong {
-                    font-weight: 700;
-
-                    i {
-                      margin-left: -5px;
-                    }
-                  }
-                }
-
-                .commit {
-                  height: 22px;
-                  font-size: 13px;
-                  color: #a7a7a7;
-                }
-              }
             }
           }
         }

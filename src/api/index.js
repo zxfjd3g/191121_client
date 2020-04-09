@@ -11,7 +11,7 @@ export const reqDetailInfo = (skuId)=>ajax.get(`/item/${skuId}`)
 export const reqAddToCart = (params)=>ajax.post(`/cart/addToCart${params}`)
 
 //搜索Search接口
-export const reqList = (searchParam)=>ajax.post(`/list`,searchParam)
+export const reqProductList = (searchParam)=>ajax.post(`/list`,searchParam)
 
 //购物车ShopCart接口
 export const reqShopCartList = ()=>ajax.get(`/cart/cartList`)

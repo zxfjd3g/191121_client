@@ -23,6 +23,7 @@ export default [
   },
 
   {
+    name: 'search',
     path: '/search/:keyword?', // params参数可传可不传
     component: Search
   },
